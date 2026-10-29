@@ -1,4 +1,6 @@
 using System.Globalization;
+using MiniEcommerce.Dominio;
+using MiniEcommerce.Servicos;
 
 namespace MiniEcommerce.ConsoleApp;
 
@@ -16,7 +18,7 @@ internal static class Program
 public sealed class AplicacaoConsole
 {
     private static readonly CultureInfo Cultura = CultureInfo.GetCultureInfo("pt-BR");
-    private readonly TextReader _entrada;
+    private readonly LeitorDeEntrada _leitor;
     private readonly TextWriter _saida;
     private readonly Catalogo _catalogo = new();
     private readonly CarrinhoDeCompras _carrinho = new();
@@ -26,7 +28,7 @@ public sealed class AplicacaoConsole
     {
         ArgumentNullException.ThrowIfNull(entrada);
         ArgumentNullException.ThrowIfNull(saida);
-        _entrada = entrada;
+        _leitor = new LeitorDeEntrada(entrada, saida);
         _saida = saida;
     }
 
@@ -35,7 +37,7 @@ public sealed class AplicacaoConsole
         while (true)
         {
             ExibirMenu();
-            var opcao = _entrada.ReadLine()?.Trim();
+            var opcao = _leitor.LerOpcao();
             if (opcao is null or "0")
             {
                 _saida.WriteLine("Até logo!");
@@ -90,9 +92,9 @@ public sealed class AplicacaoConsole
 
     private void CadastrarProduto()
     {
-        var nome = LerTexto("Nome: ");
-        var preco = LerPreco("Preço (ex.: 19,90): ");
-        var estoque = LerInteiro("Quantidade em estoque: ");
+        var nome = _leitor.LerTexto("Nome: ");
+        var preco = _leitor.LerPreco("Preço (ex.: 19,90): ");
+        var estoque = _leitor.LerInteiro("Quantidade em estoque: ");
         var produto = _catalogo.Cadastrar(nome, preco, estoque);
         _saida.WriteLine($"Produto cadastrado: #{produto.Id} - {produto.Nome}.");
     }
@@ -120,8 +122,8 @@ public sealed class AplicacaoConsole
         }
 
         ExibirCatalogo();
-        var produto = _catalogo.ObterPorId(LerInteiro("ID do produto: "));
-        var quantidade = LerInteiro("Quantidade desejada: ");
+        var produto = _catalogo.ObterPorId(_leitor.LerInteiro("ID do produto: "));
+        var quantidade = _leitor.LerInteiro("Quantidade desejada: ");
         _carrinho.Adicionar(produto, quantidade);
         _saida.WriteLine("Produto adicionado ao carrinho.");
     }
@@ -146,7 +148,7 @@ public sealed class AplicacaoConsole
         if (_carrinho.Itens.Count == 0)
             return;
 
-        var id = LerInteiro("ID do produto a remover: ");
+        var id = _leitor.LerInteiro("ID do produto a remover: ");
         _saida.WriteLine(_carrinho.Remover(id) ? "Item removido do carrinho." : "Item não encontrado no carrinho.");
     }
 
@@ -156,7 +158,7 @@ public sealed class AplicacaoConsole
             throw new InvalidOperationException("O carrinho está vazio.");
 
         ExibirCarrinho();
-        var confirmacao = LerTexto("Confirmar compra? [S/N]: ").Trim();
+        var confirmacao = _leitor.LerTexto("Confirmar compra? [S/N]: ").Trim();
         if (!confirmacao.Equals("s", StringComparison.OrdinalIgnoreCase)
             && !confirmacao.Equals("sim", StringComparison.OrdinalIgnoreCase))
         {
@@ -172,31 +174,6 @@ public sealed class AplicacaoConsole
             _saida.WriteLine($"#{item.ProdutoId} | {item.NomeProduto} | {item.Quantidade} un. x {Dinheiro(item.PrecoUnitario)} = {Dinheiro(item.Subtotal)}");
         _saida.WriteLine("Total do pedido: " + Dinheiro(pedido.Total));
         _saida.WriteLine("Estoque atualizado e carrinho esvaziado.");
-    }
-
-    private string LerTexto(string mensagem)
-    {
-        _saida.Write(mensagem);
-        return _entrada.ReadLine() ?? throw new EndOfStreamException();
-    }
-
-    private int LerInteiro(string mensagem)
-    {
-        if (int.TryParse(LerTexto(mensagem).Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var valor))
-            return valor;
-
-        throw new ArgumentException("Informe um número inteiro válido.");
-    }
-
-    private decimal LerPreco(string mensagem)
-    {
-        var texto = LerTexto(mensagem).Trim();
-        const NumberStyles estilos = NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint;
-        if (decimal.TryParse(texto, estilos, Cultura, out var valor)
-            || decimal.TryParse(texto, estilos, CultureInfo.InvariantCulture, out valor))
-            return valor;
-
-        throw new ArgumentException("Informe um preço válido, com vírgula ou ponto decimal e sem separador de milhar.");
     }
 
     private static string Dinheiro(decimal valor) => valor.ToString("C2", Cultura);

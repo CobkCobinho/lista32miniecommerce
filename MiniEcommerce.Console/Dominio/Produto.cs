@@ -1,4 +1,4 @@
-namespace MiniEcommerce;
+namespace MiniEcommerce.Dominio;
 
 /// <summary>Produto com valores válidos desde sua criação.</summary>
 public sealed class Produto

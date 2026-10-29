@@ -1,4 +1,4 @@
-namespace MiniEcommerce;
+namespace MiniEcommerce.Dominio;
 
 /// <summary>Cópia dos dados financeiros no momento da compra.</summary>
 public sealed record ItemPedido(int ProdutoId, string NomeProduto, decimal PrecoUnitario, int Quantidade)

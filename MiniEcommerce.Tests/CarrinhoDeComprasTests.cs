@@ -1,4 +1,4 @@
-using MiniEcommerce;
+using MiniEcommerce.Dominio;
 
 namespace MiniEcommerce.Tests;
 

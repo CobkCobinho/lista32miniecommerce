@@ -1,4 +1,6 @@
-namespace MiniEcommerce;
+using MiniEcommerce.Dominio;
+
+namespace MiniEcommerce.Servicos;
 
 public sealed class ServicoDeCheckout
 {
