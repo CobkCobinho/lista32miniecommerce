@@ -149,9 +149,3 @@ Para consultar o histórico:
 git log --oneline
 git status
 ```
-
-O repositório já possuía um commit automático de licença chamado `Initial commit`. Ele foi preservado; os commits da implementação seguem Conventional Commits.
-
-## Licença
-
-[MIT](LICENSE), preservada do repositório criado pelo proprietário.
