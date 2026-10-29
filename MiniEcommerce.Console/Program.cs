@@ -144,10 +144,15 @@ public sealed class AplicacaoConsole
 
     private void RemoverDoCarrinho()
     {
-        ExibirCarrinho();
         if (_carrinho.Itens.Count == 0)
+        {
+            _saida.WriteLine("O carrinho está vazio.");
             return;
+        }
 
+        // A remoção não depende de calcular totais que possam exceder decimal.
+        foreach (var item in _carrinho.Itens)
+            _saida.WriteLine($"#{item.Produto.Id} | {item.Produto.Nome} | {item.Quantidade} un.");
         var id = _leitor.LerInteiro("ID do produto a remover: ");
         _saida.WriteLine(_carrinho.Remover(id) ? "Item removido do carrinho." : "Item não encontrado no carrinho.");
     }
