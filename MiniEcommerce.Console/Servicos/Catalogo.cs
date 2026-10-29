@@ -2,9 +2,21 @@ namespace MiniEcommerce;
 
 public sealed class Catalogo
 {
-    public Produto Cadastrar(string nome, decimal preco, int quantidadeEmEstoque)
-        => throw new NotImplementedException();
+    private readonly List<Produto> _produtos = [];
+    private int _proximoId = 1;
 
-    public IReadOnlyList<Produto> Listar() => throw new NotImplementedException();
-    public Produto ObterPorId(int id) => throw new NotImplementedException();
+    public Produto Cadastrar(string nome, decimal preco, int quantidadeEmEstoque)
+    {
+        // Só consome o identificador depois de validar o cadastro.
+        var produto = new Produto(_proximoId, nome, preco, quantidadeEmEstoque);
+        _produtos.Add(produto);
+        _proximoId++;
+        return produto;
+    }
+
+    public IReadOnlyList<Produto> Listar() => _produtos.ToArray();
+
+    public Produto ObterPorId(int id) =>
+        _produtos.FirstOrDefault(produto => produto.Id == id)
+        ?? throw new KeyNotFoundException("Produto não encontrado no catálogo.");
 }
