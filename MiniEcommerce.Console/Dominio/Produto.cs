@@ -19,6 +19,16 @@ public sealed class Produto
         QuantidadeEmEstoque = quantidadeEmEstoque;
     }
 
+    internal void BaixarEstoque(int quantidade)
+    {
+        if (quantidade <= 0)
+            throw new ArgumentOutOfRangeException(nameof(quantidade), "A quantidade deve ser maior que zero.");
+        if (quantidade > QuantidadeEmEstoque)
+            throw new InvalidOperationException("Estoque insuficiente para concluir a compra.");
+
+        QuantidadeEmEstoque -= quantidade;
+    }
+
     public int Id { get; }
     public string Nome { get; }
     public decimal Preco { get; }

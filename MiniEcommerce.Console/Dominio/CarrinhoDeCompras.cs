@@ -32,4 +32,6 @@ public sealed class CarrinhoDeCompras
     }
 
     public bool Remover(int produtoId) => _itens.Remove(produtoId);
+
+    internal void Limpar() => _itens.Clear();
 }
