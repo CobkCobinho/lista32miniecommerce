@@ -156,4 +156,13 @@ public class ConsoleTests
         Assert.Contains("Informe um preço válido", saida);
         Assert.DoesNotContain("Produto cadastrado", saida);
     }
+    [Fact]
+    public void PermiteRemoverItemMesmoQuandoSubtotalExcedeLimiteDecimal()
+    {
+        var precoMaximo = decimal.MaxValue.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var saida = Executar("1", "Produto caro", precoMaximo, "2", "3", "1", "2", "5", "1", "4", "0");
+
+        Assert.Contains("Item removido", saida);
+        Assert.Contains("O carrinho está vazio", saida);
+    }
 }
